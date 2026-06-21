@@ -1,20 +1,90 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  SmartUnitTest:
+  Sistema web monolítico modular para la generación y evaluación de calidad de pruebas unitarias mediante Inteligencia Artificial.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Dominio y Flujo Principal:
+  1. El usuario (Tester) ingresa código fuente en Python y un prompt estructurado basado en plantillas predefinidas.
+  2. El sistema valida sintácticamente el código y la estructura del prompt antes de cualquier ejecución.
+  3. Si la validación es exitosa, se consume la API de OpenAI (GPT-4) para generar las pruebas unitarias usando la biblioteca pytest.
+  4. El Framework de Testing (pytest) ejecuta de forma segura las pruebas dentro de un tiempo límite de 60 segundos (para códigos de hasta 500 líneas).
+  5. El Módulo de Evaluación calcula métricas de calidad de software: Cobertura de código, Puntaje de Mutación y Tasa de Detección de fallos.
+  6. Si alguna métrica no cumple con los umbrales mínimos establecidos, el Módulo de IA para Prompt genera automáticamente un prompt de mejora para la regeneración del código de prueba.
+  7. Una vez finalizado el ciclo, el Módulo de Reportes genera un reporte de resultados y permite su descarga en formato PDF.
+
+  Reglas de Negocio Formalizadas (Umbrales de Calidad):
+  - RN1 (Cobertura de Código): Debe ser >= 80%. Si es menor, se genera prompt de mejora.
+  - RN2 (Mutation Score): Debe ser >= 70%. Si es menor, se genera prompt de mejora.
+  - RN3 (Detección de Fallos): Debe ser >= 60%. Si es menor, se genera prompt de mejora.
+  - RN4 (Restricción de Seguridad): No se permite la ejecución de código fuente que presente errores de sintaxis o fallas de compilación.
+  - RN5 (Ciclo de Mejora): La regeneración de pruebas es mandatoria si no se alcanzan los criterios de calidad.
+  - RN6 (Reporte Final): El proceso finalizado genera un reporte con todas las métricas y recomendaciones de optimización.
+
+  Arquitectura del Sistema:
+  - Estructura multicapa modular: Capa de Presentación, Capa de Aplicación y Capa de Servicios Externos.
+  - Servidor Web (Nginx) actuando como Reverse Proxy (HTTPS en puerto 443 -> HTTP en puerto 80) hacia el Servidor de Aplicaciones.
+
+  Stack Tecnológico Especificado (PSM):
+  - Capa de Presentación (Frontend): FastAPI + Jinja2 Templates / HTML + Uvicorn (ASGI).
+  - Capa de Aplicación (Backend): Python utilizando FastAPI, Pydantic (Validación de datos) y SQLAlchemy (ORM).
+  - Herramientas de Testing y Calidad: pytest (como subproceso externo de ejecución), coverage.py y mutmut.
+  - Servicios Externos: OpenAI API (Python SDK) vía peticiones HTTPS seguras.
+
+  Contrato de APIs e Interfaces (Endpoints Establecidos en ES-2):
+  - Módulo de Validación: 
+    * POST /api/v1/validation/code -> Valida sintaxis Python.
+    * POST /api/v1/validation/prompt -> Valida estructura de prompt con plantilla.
+  - Servicio de IA:
+    * POST /api/v1/ai/generate-tests -> Genera pruebas unitarias iniciales.
+    * POST /api/v1/ai/regenerate-tests -> Regenera pruebas usando el prompt de mejora.
+  - Módulo de Pruebas:
+    * POST /api/v1/tests/execute -> Invoca el proceso externo de pytest.
+    * GET /api/v1/tests/{pruebaId}/result -> Obtiene el estado y salida esperada del test.
+  - Módulo de Evaluación:
+    * POST /api/v1/evaluation/run -> Ejecuta análisis de cobertura, mutación y fallos.
+    * GET /api/v1/evaluation/{evaluacionId} -> Consulta métricas guardadas.
+    * POST /api/v1/evaluation/improvement-prompt -> Dispara la lógica de prompts de mejora según RN1, RN2, RN3.
+  - Módulo de Reportes:
+    * POST /api/v1/reports/generate -> Compila las métricas en una entidad de reporte.
+    * GET /api/v1/reports/{reporteId}/download -> Transmite el binario (application/pdf).
+
+  REFERENCIAS DEL DOMINIO:
+  - Documento de Contexto y Requisitos: (docs/Documento.md)
+  - Diagrama de Proceso de Negocio: (docs/Bpmn.png)
+  - Diagrama de Casos de Uso: (docs/Casos_de_uso_general.png)
+  - Diagramas de Secuencias  Generaciòn de pruebas unitarias : (docs/Secuencia1.png
+  - Diagrama de Secuencia Generación de Reporte: (docs/Secuencia2.png)
+  - Diagrama de Componentes de Plataforma: (docs/Componentes.png)
+  - Diagrama de clases: (docs/Diagrama_clases.png)
+  - Diagrama de Despliegue Técnico: (docs/Diagrama_despliegue.png)
+
+rules:
+  proposal:
+    - Must use grill-me skill to resolve early ambiguities.
+    - Must ask a minimum of 5 clarification questions before generating the initial proposal.
+    - Must explicitly include a "Non-goals" section (e.g., CI/CD Integration, Multi-language Support, Integration Testing).
+    - Keep proposals strictly under 500 words.
+    - Must halt and wait for user approval before finalizing the proposal.
+
+  specs:
+    - Must wait for proposal approval.
+    - Must use gherkin-authoring skill to detail acceptance criteria for every functional requirement (RF001 to RF011).
+    - Trace every requirement to business quality objectives (Code Reliability, False Security Prevention).
+    - Do not advance to design automatically.
+
+  designs:
+    - Must wait for spec approval.
+    - Must enforce C4-Architecture and UML-Modeling skills reflecting the architectural constraints of ES-2.
+    - Enforce the deployment scheme: Nginx Reverse Proxy forwarding to FastAPI on Python.
+    - Enforce presentation tier utilizing Jinja2/HTML served directly by FastAPI (Do not design independent React layers).
+    - Create Architectural Decision Records (ADRs) for executing pytest as an isolated external OS process.
+
+  tasks:
+    - Must wait for design approval.
+    - Break implementation down into atomic units of a maximum of 30 minutes execution.
+    - Separate backend service development from template integration (Jinja2/HTML views).
+    - Mandate unit tests and validation suites for critical core endpoints.
+    - Include explicit tasks for coverage verification (coverage.py) and mutation tracking (mutmut) pipeline execution.
+    - Include specific test scenarios verifying strict adherence to thresholds (80% coverage, 70% mutation, 60% failure detection).
+    - Validate binary response mapping on PDF generation pipelines.
