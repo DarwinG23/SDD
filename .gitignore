@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
+
+# Node/OpenSpec
+node_modules/
+.npm/
+*npm-debug.log*
+
+# Agentes e IA locales
+.opencode/plugins/cache/
+.agents/cache/
