@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "c4-architecture": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/c4-architecture/SKILL.md",
+      "computedHash": "f35f57420c35f2e8413e1e22934ca3950cae8286499f6fbe978cff604c35cfcd"
+    },
+    "create-architectural-decision-record": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/create-architectural-decision-record/SKILL.md",
+      "computedHash": "5c99e32293271aef0270c279c2af8b62301e29257bf85f2ebf7e810c740b4404"
+    },
+    "gherkin-authoring": {
+      "source": "melodic-software/claude-code-plugins",
+      "sourceType": "github",
+      "skillPath": "plugins/spec-driven-development/skills/gherkin-authoring/SKILL.md",
+      "computedHash": "44330460cc7554b6e36529fdf0f7618bdbad7399531bf7a3994ef06c3d76668e"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "f321507f77702a54af1db66549ec1685fc625390d06c57d7949cdcda8eb1b5c7"
+    },
+    "uml-modeling": {
+      "source": "melodic-software/claude-code-plugins",
+      "sourceType": "github",
+      "skillPath": "plugins/formal-specification/skills/uml-modeling/SKILL.md",
+      "computedHash": "9b6c3f273cd3f0892502349969c12fdaacc8eacc1a239f2b499bca60dbac0796"
+    }
+  }
+}
