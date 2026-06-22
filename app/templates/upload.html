@@ -3,41 +3,80 @@
 {% block title %}SmartUnitTest — Subir código fuente{% endblock %}
 
 {% block content %}
-<section class="upload-section">
-    <h2>Subir código fuente</h2>
-    <p class="description">Arrastra tu archivo <code>.py</code> o haz clic para seleccionarlo.</p>
+<section class="upload-section glass-card">
+    <div class="section-header">
+        <div class="section-title">
+            <span class="section-icon">&#9889;</span>
+            <h2>Subir código fuente</h2>
+        </div>
+        <div class="section-line"></div>
+    </div>
+    <p class="description">Arrastra tu archivo <code class="inline-code">.py</code> o haz clic para seleccionarlo.</p>
 
     <form id="upload-form">
         <div id="drop-zone" class="drop-zone">
-            <p class="drop-zone-text">Arrastra tu archivo <code>.py</code> aquí</p>
-            <p class="drop-zone-or">o</p>
-            <button type="button" id="browse-btn" class="btn btn-secondary">Seleccionar archivo</button>
-            <input type="file" id="file-input" accept=".py" hidden>
-            <div id="file-info" class="file-info hidden">
-                <span id="file-name"></span>
-                <button type="button" id="remove-file-btn" class="btn-remove">&times;</button>
+            <div class="drop-zone-inner">
+                <div class="upload-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <p class="drop-zone-text">Arrastra tu archivo <code>.py</code> aquí</p>
+                <p class="drop-zone-or">o</p>
+                <button type="button" id="browse-btn" class="btn btn-secondary btn-glow">Seleccionar archivo</button>
+                <input type="file" id="file-input" accept=".py" hidden>
+                <div id="file-info" class="file-info hidden">
+                    <div class="file-info-content">
+                        <span class="file-icon">&#128196;</span>
+                        <span id="file-name"></span>
+                    </div>
+                    <button type="button" id="remove-file-btn" class="btn-remove">&times;</button>
+                </div>
             </div>
+            <div class="drop-zone-border"></div>
         </div>
 
         <div class="form-group">
-            <label for="project-name">Nombre del proyecto</label>
+            <label for="project-name">
+                <span class="label-icon">&#128640;</span>
+                Nombre del proyecto
+            </label>
             <input type="text" id="project-name" name="project_name" placeholder="Ej: MiProyecto" required>
         </div>
 
-        <div class="form-group prompt-section">
-            <label for="context">Contexto</label>
-            <textarea id="context" name="context" rows="3" placeholder="Describe el contexto del código a probar..." required></textarea>
-        </div>
-        <div class="form-group prompt-section">
-            <label for="code">Código</label>
-            <textarea id="code" name="code" rows="3" placeholder="Describe la funcionalidad específica que deben cubrir las pruebas..." required></textarea>
-        </div>
-        <div class="form-group prompt-section">
-            <label for="tests">Pruebas</label>
-            <textarea id="tests" name="tests" rows="3" placeholder="Especifica los casos de prueba esperados o escenarios a validar..." required></textarea>
+        <div class="prompt-grid">
+            <div class="form-group prompt-section">
+                <label for="context">
+                    <span class="label-icon">&#128213;</span>
+                    Contexto
+                </label>
+                <textarea id="context" name="context" rows="3" placeholder="Describe el contexto del código a probar..." required></textarea>
+                <div class="textarea-glow"></div>
+            </div>
+            <div class="form-group prompt-section">
+                <label for="code">
+                    <span class="label-icon">&lt;/&gt;</span>
+                    Código
+                </label>
+                <textarea id="code" name="code" rows="3" placeholder="Describe la funcionalidad específica que deben cubrir las pruebas..." required></textarea>
+                <div class="textarea-glow"></div>
+            </div>
+            <div class="form-group prompt-section">
+                <label for="tests">
+                    <span class="label-icon">&#128220;</span>
+                    Pruebas
+                </label>
+                <textarea id="tests" name="tests" rows="3" placeholder="Especifica los casos de prueba esperados o escenarios a validar..." required></textarea>
+                <div class="textarea-glow"></div>
+            </div>
         </div>
 
-        <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Subir y validar</button>
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-glow" disabled>
+            <span class="btn-text">Subir y validar</span>
+            <span class="btn-icon">&#10140;</span>
+        </button>
     </form>
 
     <div id="result" class="result hidden">
@@ -47,33 +86,93 @@
 
 <div id="validation-overlay" class="overlay hidden">
     <div class="overlay-backdrop"></div>
-    <div class="overlay-content">
+    <div class="overlay-content glass-card">
         <div id="overlay-loading" class="overlay-state">
-            <div class="spinner"></div>
-            <p>Validando código fuente...</p>
+            <div class="spinner-container">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring spinner-ring-inner"></div>
+            </div>
+            <div class="loader-text">
+                <span class="typing-text" data-text="Validando código fuente..."></span>
+                <span class="cursor-blink">|</span>
+            </div>
+            <div class="loader-bar">
+                <div class="loader-bar-fill"></div>
+            </div>
         </div>
         <div id="overlay-success" class="overlay-state hidden">
-            <div class="overlay-icon check-mark">&#10003;</div>
-            <h3>Código válido</h3>
+            <div class="success-animation">
+                <div class="success-circle">
+                    <div class="success-check">&#10003;</div>
+                </div>
+            </div>
+            <h3 class="neon-text" data-text="Código válido">Código válido</h3>
             <p>El archivo ha sido validado correctamente.</p>
-            <button id="generate-tests-btn" class="btn btn-primary">Generar pruebas unitarias</button>
+            <button id="generate-tests-btn" class="btn btn-primary btn-glow">
+                <span class="btn-text">Generar pruebas unitarias</span>
+                <span class="btn-icon">&#9889;</span>
+            </button>
         </div>
         <div id="overlay-generating" class="overlay-state hidden">
-            <div class="spinner"></div>
-            <p>Generando pruebas unitarias con IA...</p>
+            <div class="spinner-container">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring spinner-ring-inner"></div>
+            </div>
+            <div class="loader-text">
+                <span class="typing-text" data-text="Generando pruebas unitarias con IA..."></span>
+                <span class="cursor-blink">|</span>
+            </div>
+            <div class="code-particles">
+                <span class="particle" style="--dx: -80px; --dy: -60px; --d: 0s">{</span>
+                <span class="particle" style="--dx: 80px; --dy: -40px; --d: 0.3s">}</span>
+                <span class="particle" style="--dx: -60px; --dy: 70px; --d: 0.6s">[</span>
+                <span class="particle" style="--dx: 90px; --dy: 50px; --d: 0.9s">]</span>
+                <span class="particle" style="--dx: 0px; --dy: -80px; --d: 0.2s">(</span>
+                <span class="particle" style="--dx: -100px; --dy: 20px; --d: 0.7s">)</span>
+            </div>
         </div>
         <div id="overlay-generated" class="overlay-state hidden">
-            <div class="overlay-icon check-mark">&#10003;</div>
-            <h3>Pruebas generadas</h3>
-            <pre id="test-code-viewer" class="code-viewer"><code id="test-code-content"></code></pre>
-            <button id="copy-code-btn" class="btn btn-secondary">Copiar código</button>
-            <button id="close-overlay-btn" class="btn btn-primary">Cerrar</button>
+            <div class="success-animation">
+                <div class="success-circle">
+                    <div class="success-check">&#10003;</div>
+                </div>
+            </div>
+            <h3 class="neon-text" data-text="Pruebas generadas">Pruebas generadas</h3>
+            <div class="code-viewer-container">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="code-filename">test_generated.py</span>
+                    <span class="code-lang">Python</span>
+                </div>
+                <pre id="test-code-viewer" class="code-viewer"><code id="test-code-content"></code></pre>
+            </div>
+            <div class="overlay-actions">
+                <button id="copy-code-btn" class="btn btn-secondary btn-glow">
+                    <span class="btn-icon">&#128203;</span>
+                    <span class="btn-text">Copiar código</span>
+                </button>
+                <button id="close-overlay-btn" class="btn btn-primary btn-glow">
+                    <span class="btn-text">Cerrar</span>
+                    <span class="btn-icon">&#10005;</span>
+                </button>
+            </div>
         </div>
         <div id="overlay-error" class="overlay-state hidden">
-            <div class="overlay-icon cross-mark">&#10007;</div>
-            <h3>Error de validación</h3>
+            <div class="error-animation">
+                <div class="error-circle">
+                    <div class="error-cross">&#10007;</div>
+                </div>
+            </div>
+            <h3 class="error-neon-text" data-text="Error de validación">Error</h3>
             <div id="overlay-errors" class="overlay-errors"></div>
-            <button id="retry-btn" class="btn btn-secondary">Volver a subir</button>
+            <button id="retry-btn" class="btn btn-secondary btn-glow">
+                <span class="btn-icon">&#8635;</span>
+                <span class="btn-text">Volver a subir</span>
+            </button>
         </div>
     </div>
 </div>
