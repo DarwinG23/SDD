@@ -1,0 +1,11 @@
+[Unit]
+Description=SmartUnitTest - File cleanup monitor
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'find /tmp/smartunittest/uploads -maxdepth 1 -type d -mmin +60 -exec rm -rf {} +'
+User=www-data
+
+[Install]
+WantedBy=multi-user.target

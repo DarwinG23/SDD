@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}SmartUnitTest — Subir código fuente{% endblock %}
+
+{% block content %}
+<section class="upload-section">
+    <h2>Subir código fuente</h2>
+    <p class="description">Arrastra tu archivo <code>.py</code> o haz clic para seleccionarlo.</p>
+
+    <form id="upload-form">
+        <div id="drop-zone" class="drop-zone">
+            <p class="drop-zone-text">Arrastra tu archivo <code>.py</code> aquí</p>
+            <p class="drop-zone-or">o</p>
+            <button type="button" id="browse-btn" class="btn btn-secondary">Seleccionar archivo</button>
+            <input type="file" id="file-input" accept=".py" hidden>
+            <div id="file-info" class="file-info hidden">
+                <span id="file-name"></span>
+                <button type="button" id="remove-file-btn" class="btn-remove">&times;</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="project-name">Nombre del proyecto</label>
+            <input type="text" id="project-name" name="project_name" placeholder="Ej: MiProyecto" required>
+        </div>
+
+        <div class="form-group prompt-section">
+            <label for="context">Contexto</label>
+            <textarea id="context" name="context" rows="3" placeholder="Describe el contexto del código a probar..." required></textarea>
+        </div>
+        <div class="form-group prompt-section">
+            <label for="code">Código</label>
+            <textarea id="code" name="code" rows="3" placeholder="Describe la funcionalidad específica que deben cubrir las pruebas..." required></textarea>
+        </div>
+        <div class="form-group prompt-section">
+            <label for="tests">Pruebas</label>
+            <textarea id="tests" name="tests" rows="3" placeholder="Especifica los casos de prueba esperados o escenarios a validar..." required></textarea>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Subir y validar</button>
+    </form>
+
+    <div id="result" class="result hidden">
+        <div id="result-content"></div>
+    </div>
+</section>
+
+<div id="validation-overlay" class="overlay hidden">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-content">
+        <div id="overlay-loading" class="overlay-state">
+            <div class="spinner"></div>
+            <p>Validando código fuente...</p>
+        </div>
+        <div id="overlay-success" class="overlay-state hidden">
+            <div class="overlay-icon check-mark">&#10003;</div>
+            <h3>Código válido</h3>
+            <p>El archivo ha sido validado correctamente.</p>
+            <button id="generate-tests-btn" class="btn btn-primary">Generar pruebas unitarias</button>
+        </div>
+        <div id="overlay-error" class="overlay-state hidden">
+            <div class="overlay-icon cross-mark">&#10007;</div>
+            <h3>Error de validación</h3>
+            <div id="overlay-errors" class="overlay-errors"></div>
+            <button id="retry-btn" class="btn btn-secondary">Volver a subir</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
