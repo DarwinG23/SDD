@@ -14,10 +14,15 @@
     const overlay = document.getElementById("validation-overlay");
     const overlayLoading = document.getElementById("overlay-loading");
     const overlaySuccess = document.getElementById("overlay-success");
+    const overlayGenerating = document.getElementById("overlay-generating");
+    const overlayGenerated = document.getElementById("overlay-generated");
     const overlayError = document.getElementById("overlay-error");
     const overlayErrors = document.getElementById("overlay-errors");
     const generateTestsBtn = document.getElementById("generate-tests-btn");
     const retryBtn = document.getElementById("retry-btn");
+    const testCodeContent = document.getElementById("test-code-content");
+    const copyCodeBtn = document.getElementById("copy-code-btn");
+    const closeOverlayBtn = document.getElementById("close-overlay-btn");
 
     let selectedFile = null;
     let sessionId = null;
@@ -60,9 +65,13 @@
         overlay.classList.remove("hidden");
         overlayLoading.classList.add("hidden");
         overlaySuccess.classList.add("hidden");
+        overlayGenerating.classList.add("hidden");
+        overlayGenerated.classList.add("hidden");
         overlayError.classList.add("hidden");
         if (state === "loading") overlayLoading.classList.remove("hidden");
         else if (state === "success") overlaySuccess.classList.remove("hidden");
+        else if (state === "generating") overlayGenerating.classList.remove("hidden");
+        else if (state === "generated") overlayGenerated.classList.remove("hidden");
         else if (state === "error") overlayError.classList.remove("hidden");
     }
 
@@ -173,8 +182,43 @@
         }
     });
 
-    generateTestsBtn.addEventListener("click", function () {
-        alert("Funcionalidad de generación de pruebas disponible próximamente.");
+    generateTestsBtn.addEventListener("click", async function () {
+        const context = contextInput.value.trim();
+        const code = codeInput.value.trim();
+        const tests = testsInput.value.trim();
+        const combinedPrompt = "Contexto:\n" + context + "\n\nCódigo:\n" + code + "\n\nPruebas:\n" + tests;
+
+        showOverlay("generating");
+
+        try {
+            const response = await fetch("/api/v1/ai/generate-tests", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id: sessionId, prompt: combinedPrompt }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                testCodeContent.textContent = data.test_code;
+                showOverlay("generated");
+            } else {
+                showOverlayError({ errors: [data.error || "Error al generar pruebas"] });
+            }
+        } catch (err) {
+            showOverlayError({ errors: ["Error de conexión con el servidor"] });
+        }
+    });
+
+    copyCodeBtn.addEventListener("click", function () {
+        navigator.clipboard.writeText(testCodeContent.textContent).then(function () {
+            copyCodeBtn.textContent = "Copiado!";
+            setTimeout(function () { copyCodeBtn.textContent = "Copiar código"; }, 2000);
+        });
+    });
+
+    closeOverlayBtn.addEventListener("click", function () {
+        hideOverlay();
     });
 
     retryBtn.addEventListener("click", function () {

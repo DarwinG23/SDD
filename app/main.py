@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.routers import upload
+from app.routers import upload, ai
 from app.services.file_storage import cleanup_old_sessions
 
 
@@ -28,3 +28,4 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 app.include_router(upload.router)
+app.include_router(ai.router)

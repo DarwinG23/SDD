@@ -58,6 +58,17 @@
             <p>El archivo ha sido validado correctamente.</p>
             <button id="generate-tests-btn" class="btn btn-primary">Generar pruebas unitarias</button>
         </div>
+        <div id="overlay-generating" class="overlay-state hidden">
+            <div class="spinner"></div>
+            <p>Generando pruebas unitarias con IA...</p>
+        </div>
+        <div id="overlay-generated" class="overlay-state hidden">
+            <div class="overlay-icon check-mark">&#10003;</div>
+            <h3>Pruebas generadas</h3>
+            <pre id="test-code-viewer" class="code-viewer"><code id="test-code-content"></code></pre>
+            <button id="copy-code-btn" class="btn btn-secondary">Copiar código</button>
+            <button id="close-overlay-btn" class="btn btn-primary">Cerrar</button>
+        </div>
         <div id="overlay-error" class="overlay-state hidden">
             <div class="overlay-icon cross-mark">&#10007;</div>
             <h3>Error de validación</h3>

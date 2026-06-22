@@ -226,7 +226,7 @@ body {
     background: #fff;
     border-radius: 16px;
     padding: 2.5rem;
-    max-width: 480px;
+    max-width: 680px;
     width: 90%;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -292,4 +292,28 @@ body {
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+.code-viewer {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.85rem;
+    font-family: "Fira Code", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.code-viewer code {
+    font-family: inherit;
+}
+
+#copy-code-btn {
+    margin-bottom: 0.5rem;
 }
