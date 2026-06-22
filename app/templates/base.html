@@ -5,15 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SmartUnitTest{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="scanline"></div>
+    <div class="grid-overlay"></div>
+
     <header class="header">
-        <h1>SmartUnitTest</h1>
-        <p class="subtitle">Generación y evaluación de pruebas unitarias con IA</p>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">&lt;/&gt;</span>
+                <div class="logo-text">
+                    <h1>SmartUnitTest</h1>
+                    <p class="subtitle">Generación y evaluación de pruebas unitarias con IA</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="dot"></span>
+                <span class="status-text">System Online</span>
+            </div>
+        </div>
+        <div class="header-glow"></div>
     </header>
+
     <main class="main">
         {% block content %}{% endblock %}
     </main>
+
+    <footer class="footer">
+        <p>SmartUnitTest v1.0 &mdash; Powered by Ollama &mdash; <span class="glitch-text" data-text="qwen2.5-coder:7b">qwen2.5-coder:7b</span></p>
+    </footer>
+
     <script src="/static/js/upload.js"></script>
 </body>
 </html>

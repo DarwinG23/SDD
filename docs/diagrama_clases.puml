@@ -1,0 +1,94 @@
+@startuml
+skinparam classAttributeIconSize 0
+title SmartUnitTest - Diagrama de Clases (Refactorizado)
+
+package "FastAPI" {
+  class FastAPI <<framework>> {
+    +title: str
+    +lifespan()
+    +mount()
+    +include_router()
+  }
+}
+
+package "Controllers" {
+  class UploadController {
+    +file_storage: FileStorageService
+    +validation: ValidationService
+    +router: APIRouter
+    +templates: Jinja2Templates
+    +upload_page(request)
+    +upload_source(request, file, project_name, prompt)
+    +delete_upload(session_id)
+  }
+
+  class AIController {
+    +file_storage: FileStorageService
+    +ai_service: AIService
+    +router: APIRouter
+    +generate_tests_endpoint(req)
+  }
+}
+
+package "Services" {
+  class FileStorageService {
+    +UPLOAD_BASE_DIR: Path
+    +ALLOWED_EXTENSIONS: set
+    +MAX_FILE_SIZE: int
+    +store_file(session_id, content, filename) Path
+    +get_file_path(session_id) Path | None
+    +cleanup_session(session_id)
+    +cleanup_old_sessions(max_age) int
+  }
+
+  class ValidationService {
+    +validate_python_syntax(file_path) dict
+    +validate_prompt_structure(prompt, template) dict
+  }
+
+  class AIService {
+    +OLLAMA_URL: str
+    +OLLAMA_MODEL: str
+    +SYSTEM_PROMPT: str
+    +generate_tests(prompt, code) str
+    +_build_user_message(prompt, code) str
+    +_extract_code_block(response) str
+  }
+}
+
+package "Modelos" {
+  class GenerateRequest <<Pydantic>> {
+    +session_id: str
+    +prompt: str
+  }
+
+  class GenerateResponse <<Pydantic>> {
+    +success: bool
+    +test_code: str | None
+    +error: str | None
+  }
+}
+
+FastAPI --> UploadController : include_router(router)
+FastAPI --> AIController : include_router(router)
+
+UploadController *--> FileStorageService : usa
+UploadController *--> ValidationService : usa
+
+AIController *--> FileStorageService : usa
+AIController *--> AIService : usa
+AIController ..> GenerateRequest : recibe
+AIController ..> GenerateResponse : retorna
+
+note right of AIService
+  Implementado en app/services/ai_service.py
+  Usa Ollama en localhost:11434/api/generate
+  Modelo: qwen2.5-coder:7b
+end note
+
+note right of FileStorageService
+  Implementado en app/services/file_storage.py
+  Almacena en /tmp/smartunittest/uploads/{session_id}/
+end note
+
+@enduml

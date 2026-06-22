@@ -5,15 +5,20 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.routers import upload, ai
-from app.services.file_storage import cleanup_old_sessions
+from app.controllers.upload_controller import UploadController
+from app.controllers.ai_controller import AIController
+from app.services.file_storage import FileStorageService
+from app.services.validation import ValidationService
+from app.services.ai_service import AIService
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    file_storage = FileStorageService()
+
     async def periodic_cleanup():
         while True:
-            cleanup_old_sessions(max_age_seconds=3600)
+            file_storage.cleanup_old_sessions(max_age_seconds=3600)
             await asyncio.sleep(1800)
 
     task = asyncio.create_task(periodic_cleanup())
@@ -27,5 +32,12 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
 
-app.include_router(upload.router)
-app.include_router(ai.router)
+file_storage = FileStorageService()
+validation = ValidationService()
+ai_service = AIService()
+
+upload_controller = UploadController(file_storage, validation)
+ai_controller = AIController(file_storage, ai_service)
+
+app.include_router(upload_controller.router)
+app.include_router(ai_controller.router)
