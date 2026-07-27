@@ -5,7 +5,7 @@ interface UploadPageProps {
   sessionId: string | null;
 }
 
-export function UploadPage({ onUploadSuccess, sessionId }: UploadPageProps) {
+export function UploadPage({ onUploadSuccess, sessionId: _sessionId }: UploadPageProps) {
   const [file, setFile] = useState<File | null>(null);
   const [projectName, setProjectName] = useState('');
   const [dragging, setDragging] = useState(false);
