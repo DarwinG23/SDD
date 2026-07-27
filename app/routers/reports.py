@@ -1,15 +1,22 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel
 
 from app.negocio.reports.reports_service import ReportsService
 from app.negocio.reports.pdf_generator import PDFGenerator
+from app.negocio.prompts.prompts_service import PromptsService
+
+
+logger = logging.getLogger(__name__)
 
 
 class ReportGenerateRequest(BaseModel):
     evaluation_results: dict
     test_code: str = ""
     test_result: dict | None = None
+    original_prompt: str = ""
     improvement_cycles: int = 0
 
 
@@ -21,6 +28,7 @@ class ReportGenerateResponse(BaseModel):
 router = APIRouter(prefix="/api/v1/reports", tags=["reports"])
 reports_service = ReportsService()
 pdf_generator = PDFGenerator()
+prompts_service = PromptsService()
 _generated_reports: dict[str, dict] = {}
 _report_counter: int = 0
 
@@ -34,6 +42,17 @@ def generate_report(req: ReportGenerateRequest):
     report_data = reports_service.compile_report_data(
         req.evaluation_results, req.test_code, req.test_result, req.improvement_cycles
     )
+
+    improvement_prompt = ""
+    if not req.evaluation_results.get("all_passed"):
+        try:
+            improvement_prompt = prompts_service.generate_improvement_prompt(
+                req.original_prompt, req.test_code, req.evaluation_results.get("details", req.evaluation_results)
+            )
+            logger.info("Improvement prompt generated (%d chars)", len(improvement_prompt))
+        except Exception as e:
+            logger.warning("Error generating improvement prompt: %s", e)
+    report_data["improvement_prompt"] = improvement_prompt
     pdf_bytes = pdf_generator.generate_report(report_data)
 
     _generated_reports[report_id] = {

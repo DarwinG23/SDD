@@ -75,8 +75,8 @@ export async function getEvaluation(evaluationId: string): Promise<EvaluationRes
   return request<EvaluationResult>('GET', `/evaluation/${evaluationId}`);
 }
 
-export async function generateReport(evaluationResults: Record<string, unknown>, testCode: string, testResult?: TestResult): Promise<{ report_id: string; status: string }> {
-  return request('POST', '/reports/generate', { evaluation_results: evaluationResults, test_code: testCode, test_result: testResult });
+export async function generateReport(evaluationResults: Record<string, unknown>, testCode: string, testResult?: TestResult, originalPrompt?: string): Promise<{ report_id: string; status: string }> {
+  return request('POST', '/reports/generate', { evaluation_results: evaluationResults, test_code: testCode, test_result: testResult, original_prompt: originalPrompt });
 }
 
 export function getReportDownloadUrl(reportId: string): string {

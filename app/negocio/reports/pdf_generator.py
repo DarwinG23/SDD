@@ -169,6 +169,27 @@ class PDFGenerator:
                 normal_style
             ))
 
+        improvement_prompt = report_data.get("improvement_prompt", "")
+        if improvement_prompt:
+            elements.append(Spacer(1, 6 * mm))
+            elements.append(Paragraph("Sugerencia de Prompt de Mejora", heading_style))
+            elements.append(Paragraph(
+                "Las siguientes métricas no alcanzaron los umbrales. "
+                "Se generó automáticamente un prompt optimizado para la siguiente iteración:",
+                normal_style
+            ))
+            elements.append(Spacer(1, 2 * mm))
+            prompt_style = ParagraphStyle(
+                "ImproveMono", parent=styles["Code"],
+                fontSize=7.5, leading=10, spaceAfter=6,
+                backColor=colors.HexColor("#F1F5F9"),
+                borderPadding=8,
+            )
+            elements.append(Paragraph(
+                improvement_prompt.replace("\n", "<br/>"),
+                prompt_style
+            ))
+
         doc.build(elements)
         buffer.seek(0)
         return buffer.getvalue()

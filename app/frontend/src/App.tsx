@@ -16,6 +16,7 @@ export default function App() {
   const [completedSteps, setCompletedSteps] = useState<Set<StepId>>(new Set());
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sourcePath, setSourcePath] = useState<string>('');
+  const [originalPrompt, setOriginalPrompt] = useState('');
   const [testCode, setTestCode] = useState('');
   const [genError, setGenError] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
@@ -36,6 +37,7 @@ export default function App() {
 
   const handlePromptSubmit = useCallback(async (prompt: string) => {
     if (!sessionId) return;
+    setOriginalPrompt(prompt);
     setCurrentStep('generating');
     setGenError(null);
     completeStep('configure');
@@ -76,12 +78,12 @@ export default function App() {
   const handleGenerateReport = useCallback(async () => {
     if (!evaluation) return;
     try {
-      const result = await generateReport(evaluation as unknown as Record<string, unknown>, testCode, testResult ?? undefined);
+      const result = await generateReport(evaluation as unknown as Record<string, unknown>, testCode, testResult ?? undefined, originalPrompt);
       setReportId(result.report_id);
     } catch {
       alert('Error al generar reporte');
     }
-  }, [evaluation, testCode, testResult]);
+  }, [evaluation, testCode, testResult, originalPrompt]);
 
   const handleStepClick = useCallback((step: StepId) => {
     setCurrentStep(step);
