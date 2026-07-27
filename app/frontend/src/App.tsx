@@ -76,12 +76,12 @@ export default function App() {
   const handleGenerateReport = useCallback(async () => {
     if (!evaluation) return;
     try {
-      const result = await generateReport(evaluation as unknown as Record<string, unknown>, testCode);
+      const result = await generateReport(evaluation as unknown as Record<string, unknown>, testCode, testResult ?? undefined);
       setReportId(result.report_id);
     } catch {
       alert('Error al generar reporte');
     }
-  }, [evaluation, testCode]);
+  }, [evaluation, testCode, testResult]);
 
   const handleStepClick = useCallback((step: StepId) => {
     setCurrentStep(step);

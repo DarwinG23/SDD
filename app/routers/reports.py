@@ -9,6 +9,7 @@ from app.negocio.reports.pdf_generator import PDFGenerator
 class ReportGenerateRequest(BaseModel):
     evaluation_results: dict
     test_code: str = ""
+    test_result: dict | None = None
     improvement_cycles: int = 0
 
 
@@ -31,7 +32,7 @@ def generate_report(req: ReportGenerateRequest):
     report_id = f"report_{_report_counter}"
 
     report_data = reports_service.compile_report_data(
-        req.evaluation_results, req.test_code, req.improvement_cycles
+        req.evaluation_results, req.test_code, req.test_result, req.improvement_cycles
     )
     pdf_bytes = pdf_generator.generate_report(report_data)
 
