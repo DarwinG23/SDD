@@ -8,10 +8,14 @@ class TestRunner:
 
     async def execute_tests(self, source_code: str, test_code: str) -> dict:
         with tempfile.TemporaryDirectory() as tmpdir:
-            source_file = Path(tmpdir) / "source.py"
-            source_file.write_text(source_code, encoding="utf-8")
+            if source_code:
+                source_file = Path(tmpdir) / "source.py"
+                source_file.write_text(source_code, encoding="utf-8")
+                full_test = f"from source import *\n\n{test_code}"
+            else:
+                full_test = test_code
             test_file = Path(tmpdir) / "test_generated.py"
-            test_file.write_text(test_code, encoding="utf-8")
+            test_file.write_text(full_test, encoding="utf-8")
 
             try:
                 process = await asyncio.create_subprocess_exec(

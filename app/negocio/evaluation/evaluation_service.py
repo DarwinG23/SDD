@@ -11,13 +11,16 @@ class EvaluationService:
 
     def run_coverage(self, source_path: Path, test_code: str) -> float:
         with tempfile.TemporaryDirectory() as tmpdir:
+            source_code = source_path.read_text(encoding="utf-8")
+            source_copy = Path(tmpdir) / "source.py"
+            source_copy.write_text(source_code, encoding="utf-8")
             test_file = Path(tmpdir) / "test_generated.py"
-            test_file.write_text(test_code, encoding="utf-8")
+            test_file.write_text(f"from source import *\n\n{test_code}", encoding="utf-8")
 
             result = subprocess.run(
                 [
                     "coverage", "run",
-                    "--source", str(source_path.parent),
+                    "--source", str(tmpdir),
                     "-m", "pytest", str(test_file),
                     "-q", "--no-header",
                 ],
@@ -39,10 +42,10 @@ class EvaluationService:
 
     def run_mutation_score(self, source_path: Path, test_code: str) -> float:
         with tempfile.TemporaryDirectory() as tmpdir:
-            source_copy = Path(tmpdir) / source_path.name
+            source_copy = Path(tmpdir) / "source.py"
             source_copy.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
-            test_file = Path(tmpdir) / f"test_{source_path.stem}.py"
-            test_file.write_text(test_code, encoding="utf-8")
+            test_file = Path(tmpdir) / "test_source.py"
+            test_file.write_text(f"from source import *\n\n{test_code}", encoding="utf-8")
 
             result = subprocess.run(
                 ["mutmut", "run", "--paths-to-mutate", str(source_copy)],
@@ -85,10 +88,10 @@ class EvaluationService:
             if mutated_source == source_code:
                 continue
             with tempfile.TemporaryDirectory() as tmpdir:
-                mutated_file = Path(tmpdir) / source_path.name
+                mutated_file = Path(tmpdir) / "source.py"
                 mutated_file.write_text(mutated_source, encoding="utf-8")
-                test_file = Path(tmpdir) / "test_fail.py"
-                test_file.write_text(test_code, encoding="utf-8")
+                test_file = Path(tmpdir) / "test_source.py"
+                test_file.write_text(f"from source import *\n\n{test_code}", encoding="utf-8")
 
                 result = subprocess.run(
                     ["pytest", str(test_file), "-q", "--no-header"],

@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 
 interface UploadPageProps {
-  onUploadSuccess: (sessionId: string) => void;
+  onUploadSuccess: (sessionId: string, sourcePath?: string) => void;
   sessionId: string | null;
 }
 
@@ -10,11 +10,13 @@ export function UploadPage({ onUploadSuccess, sessionId: _sessionId }: UploadPag
   const [projectName, setProjectName] = useState('');
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((f: File) => {
+    setError(null);
     if (!f.name.endsWith('.py')) {
-      alert('Solo se permiten archivos .py');
+      setError('Solo se permiten archivos .py');
       return;
     }
     setFile(f);
@@ -41,12 +43,20 @@ export function UploadPage({ onUploadSuccess, sessionId: _sessionId }: UploadPag
       const res = await fetch('/api/v1/upload/source', { method: 'POST', body: formData });
       const data = await res.json();
       if (res.ok) {
-        onUploadSuccess(data.sessionId);
+        onUploadSuccess(data.sessionId, data.sourcePath);
+      } else if (data.errors) {
+        const msgs = data.errors.map((e: { line?: number; message: string }) =>
+          `Línea ${e.line || '?'}: ${e.message}`
+        );
+        setError(msgs.join('\n'));
+      } else if (Array.isArray(data.detail)) {
+        setError(data.detail.map((d: { msg: string }) => d.msg).join('; '));
       } else {
-        alert(data.detail || 'Error al subir archivo');
+        setError(data.detail || 'Error al subir archivo');
       }
-    } catch {
-      alert('Error de conexión con el servidor');
+    } catch (e) {
+      console.error('Upload error:', e);
+      setError('Error de conexión con el servidor');
     } finally {
       setUploading(false);
     }
@@ -80,6 +90,21 @@ export function UploadPage({ onUploadSuccess, sessionId: _sessionId }: UploadPag
           <label>Nombre del proyecto</label>
           <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="Ej: MiProyecto" required />
         </div>
+
+        {error && (
+          <div style={{
+            color: 'var(--error)',
+            fontFamily: 'var(--mono)',
+            fontSize: 13,
+            padding: '8px 12px',
+            background: 'var(--error-bg)',
+            border: '1px solid rgba(255, 51, 85, 0.2)',
+            borderRadius: 'var(--radius)',
+            marginBottom: 16,
+          }}>
+            {error}
+          </div>
+        )}
 
         <button type="submit" disabled={!file || uploading} className="btn btn-primary">
           {uploading ? 'Subiendo...' : 'Subir y validar'}

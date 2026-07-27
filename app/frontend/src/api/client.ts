@@ -18,6 +18,7 @@ export interface UploadResult {
   valid: boolean;
   uploadId: string | null;
   sessionId: string;
+  sourcePath?: string;
   projectName?: string;
   prompt?: string;
   errors?: Array<{ line?: number; message: string }>;
@@ -62,8 +63,8 @@ export async function regenerateTests(sessionId: string, prompt: string, code: s
   return request<AiGenerateResult>('POST', '/ai/regenerate-tests', { session_id: sessionId, prompt, code });
 }
 
-export async function executeTests(sourceCode: string, testCode: string): Promise<TestResult> {
-  return request<TestResult>('POST', '/tests/execute', { session_id: '', source_code: sourceCode, test_code: testCode });
+export async function executeTests(sessionId: string, testCode: string): Promise<TestResult> {
+  return request<TestResult>('POST', '/tests/execute', { session_id: sessionId, source_code: '', test_code: testCode });
 }
 
 export async function runEvaluation(sourcePath: string, testCode: string): Promise<EvaluationResult> {

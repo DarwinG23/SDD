@@ -31,7 +31,7 @@ class UploadController:
         request: Request,
         file: UploadFile = File(...),
         project_name: str = Form(...),
-        prompt: str = Form(...),
+        prompt: str = Form(""),
     ):
         session_id = request.cookies.get("session_id")
         if not session_id:
@@ -68,6 +68,7 @@ class UploadController:
                 "valid": True,
                 "uploadId": upload_id,
                 "sessionId": session_id,
+                "sourcePath": str(file_path),
                 "projectName": project_name,
                 "prompt": prompt,
             },

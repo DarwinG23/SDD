@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
 import asyncio
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -53,3 +55,14 @@ app.include_router(ai_router.router)
 app.include_router(tests_router.router)
 app.include_router(evaluation_router.router)
 app.include_router(reports_router.router)
+
+react_index = Path("app/static/react/index.html")
+
+@app.get("/{full_path:path}")
+async def serve_react_app(full_path: str):
+    if full_path.startswith("api/"):
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=404, content={"detail": "Not found"})
+    if react_index.exists():
+        return FileResponse(str(react_index))
+    return JSONResponse(status_code=404, content={"detail": "React build not found. Run: cd app/frontend && npm run build"})

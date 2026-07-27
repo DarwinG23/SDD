@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.servicios.test_runner import TestRunner
+from app.services.file_storage import FileStorageService
 
 
 class TestExecuteRequest(BaseModel):
@@ -21,12 +22,18 @@ class TestResultResponse(BaseModel):
 
 router = APIRouter(prefix="/api/v1/tests", tags=["tests"])
 test_runner = TestRunner()
+file_storage = FileStorageService()
 _execution_results: dict[str, dict] = {}
 
 
 @router.post("/execute", response_model=TestResultResponse)
 async def execute_tests(req: TestExecuteRequest):
-    raw_result = await test_runner.execute_tests(req.source_code, req.test_code)
+    source_code = req.source_code
+    if not source_code and req.session_id:
+        file_path = file_storage.get_file_path(req.session_id)
+        if file_path:
+            source_code = file_path.read_text(encoding="utf-8")
+    raw_result = await test_runner.execute_tests(source_code, req.test_code)
     parsed = test_runner.parse_test_result(raw_result)
     result_id = req.session_id
     _execution_results[result_id] = parsed

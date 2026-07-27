@@ -11,13 +11,24 @@ class AIServicio:
         "Eres un experto en generación de pruebas unitarias en Python con pytest. "
         "Genera solo el código de las pruebas, sin explicaciones ni markdown. "
         "Las pruebas deben usar pytest y cubrir casos normales, bordes y de error. "
-        "Incluye docstrings descriptivos en cada función de prueba."
+        "Incluye docstrings descriptivos en cada función de prueba. "
+        "El código fuente estará disponible en un archivo llamado 'source'. "
+        "Debes incluir 'from source import <funciones>' al inicio del archivo de pruebas.\n\n"
+        "IMPORTANTE: Si alguna función usa input(), debes mockear input() con "
+        "unittest.mock.patch. Por ejemplo:\n"
+        "from unittest.mock import patch\n\n"
+        "def test_funcion_con_input():\n"
+        '    with patch("builtins.input", side_effect=["1", "2", "3"]):\n'
+        "        resultado = funcion_principal()\n"
+        "        assert resultado == esperado\n\n"
+        "NUNCA invoques directamente funciones que usen input() sin mockearlas."
     )
 
     def _build_user_message(self, prompt: str, code: str) -> str:
         return (
             f"Contexto y requerimientos:\n{prompt}\n\n"
-            f"Código fuente a probar:\n```python\n{code}\n```"
+            f"Código fuente a probar (archivo source.py):\n```python\n{code}\n```\n\n"
+            f"Recuerda: si alguna función usa input(), debes mockearla con unittest.mock.patch."
         )
 
     def _extract_code_block(self, response_text: str) -> str:
