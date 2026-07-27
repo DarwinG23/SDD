@@ -1,3 +1,4 @@
+import json
 import subprocess
 import tempfile
 from pathlib import Path
@@ -46,30 +47,35 @@ class EvaluationService:
             source_copy.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
             test_file = Path(tmpdir) / "test_source.py"
             test_file.write_text(f"from source import *\n\n{test_code}", encoding="utf-8")
+            cfg = Path(tmpdir) / "setup.cfg"
+            cfg.write_text(
+                "[mutmut]\n"
+                "source_paths = source.py\n"
+                "do_not_mutate = test_source.py\n",
+                encoding="utf-8",
+            )
 
             result = subprocess.run(
-                ["mutmut", "run", "--paths-to-mutate", str(source_copy)],
+                ["mutmut", "run", "--max-children", "1"],
                 capture_output=True,
                 text=True,
                 timeout=120,
                 cwd=tmpdir,
             )
             result = subprocess.run(
-                ["mutmut", "results"],
+                ["mutmut", "export-cicd-stats"],
                 capture_output=True,
                 text=True,
+                timeout=10,
                 cwd=tmpdir,
             )
+            stats_path = Path(tmpdir) / "mutants" / "mutmut-cicd-stats.json"
             try:
-                lines = result.stdout.strip().splitlines()
-                for line in lines:
-                    if "killed" in line.lower() and "/" in line:
-                        parts = line.split()
-                        killed = int(parts[0])
-                        total = int(parts[2])
-                        return (killed / total * 100) if total > 0 else 100.0
-                return 0.0
-            except (ValueError, IndexError):
+                stats = json.loads(stats_path.read_text(encoding="utf-8"))
+                killed = stats.get("killed", 0)
+                total = stats.get("total", 0)
+                return (killed / total * 100) if total > 0 else 100.0
+            except (FileNotFoundError, json.JSONDecodeError, ValueError, KeyError):
                 return 0.0
 
     def run_failure_detection(self, source_path: Path, test_code: str) -> float:
