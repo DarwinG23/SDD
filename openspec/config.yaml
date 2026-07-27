@@ -51,13 +51,11 @@ context: |
 
   REFERENCIAS DEL DOMINIO:
   - Documento de Contexto y Requisitos: (docs/Documento.md)
-  - Diagrama de Proceso de Negocio: (docs/Bpmn.png)
-  - Diagrama de Casos de Uso: (docs/Casos_de_uso_general.png)
-  - Diagramas de Secuencias  Generaciòn de pruebas unitarias : (docs/Secuencia1.png
-  - Diagrama de Secuencia Generación de Reporte: (docs/Secuencia2.png)
-  - Diagrama de Componentes de Plataforma: (docs/Componentes.png)
-  - Diagrama de clases: (docs/Diagrama_clases.png)
-  - Diagrama de Despliegue Técnico: (docs/Diagrama_despliegue.png)
+  - Diagrama de Casos de Uso: (docs/Casos_de_usos.md)
+  - Diagrama de Componentes de Plataforma: (docs/Diagrama_componentes.md)
+  - Diagrama de clases: (docs/Diagrama_clases.md)
+  - Diagrama de Despliegue Técnico: (docs/Diagrama_despliegue.md)
+  - Diagrama de paquetes: (docs/Diagrama_paquetes.md)
 
 rules:
   proposal:
