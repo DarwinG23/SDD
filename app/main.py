@@ -11,6 +11,12 @@ from app.services.file_storage import FileStorageService
 from app.services.validation import ValidationService
 from app.services.ai_service import AIService
 
+from app.routers import validation as validation_router
+from app.routers import ai as ai_router
+from app.routers import tests as tests_router
+from app.routers import evaluation as evaluation_router
+from app.routers import reports as reports_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,3 +47,9 @@ ai_controller = AIController(file_storage, ai_service)
 
 app.include_router(upload_controller.router)
 app.include_router(ai_controller.router)
+
+app.include_router(validation_router.router)
+app.include_router(ai_router.router)
+app.include_router(tests_router.router)
+app.include_router(evaluation_router.router)
+app.include_router(reports_router.router)
