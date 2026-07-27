@@ -15,8 +15,16 @@ export function ReportDownload({ reportId, onGenerate, generating }: ReportDownl
           Descargar PDF
         </a>
       ) : (
-        <button onClick={onGenerate} disabled={generating} className="btn btn-secondary">
+        <button onClick={onGenerate} disabled={generating} className="btn btn-secondary" style={{ position: 'relative' }}>
           {generating ? 'Generando...' : 'Generar reporte'}
+          {generating && (
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, height: 3,
+              width: '100%', background: 'rgba(255,255,255,0.2)', borderRadius: 2, overflow: 'hidden',
+            }}>
+              <div className="loading-bar" />
+            </div>
+          )}
         </button>
       )}
     </div>

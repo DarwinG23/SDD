@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
@@ -10,6 +11,7 @@ from app.negocio.prompts.prompts_service import PromptsService
 
 
 logger = logging.getLogger(__name__)
+REPORTS_DIR = Path("/tmp/smartunittest/uploads/reports")
 
 
 class ReportGenerateRequest(BaseModel):
@@ -29,7 +31,6 @@ router = APIRouter(prefix="/api/v1/reports", tags=["reports"])
 reports_service = ReportsService()
 pdf_generator = PDFGenerator()
 prompts_service = PromptsService()
-_generated_reports: dict[str, dict] = {}
 _report_counter: int = 0
 
 
@@ -53,23 +54,23 @@ def generate_report(req: ReportGenerateRequest):
         except Exception as e:
             logger.warning("Error generating improvement prompt: %s", e)
     report_data["improvement_prompt"] = improvement_prompt
+
     pdf_bytes = pdf_generator.generate_report(report_data)
 
-    _generated_reports[report_id] = {
-        "data": report_data,
-        "pdf_bytes": pdf_bytes,
-    }
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    report_path = REPORTS_DIR / f"{report_id}.pdf"
+    report_path.write_bytes(pdf_bytes)
 
     return ReportGenerateResponse(report_id=report_id, status="generated")
 
 
 @router.get("/{report_id}/download")
 def download_report(report_id: str):
-    report = _generated_reports.get(report_id)
-    if report is None:
+    report_path = REPORTS_DIR / f"{report_id}.pdf"
+    if not report_path.exists():
         raise HTTPException(status_code=404, detail="Reporte no encontrado")
 
-    pdf_bytes = report["pdf_bytes"]
+    pdf_bytes = report_path.read_bytes()
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

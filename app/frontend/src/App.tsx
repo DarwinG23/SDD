@@ -77,11 +77,14 @@ export default function App() {
 
   const handleGenerateReport = useCallback(async () => {
     if (!evaluation) return;
+    setGenerating(true);
     try {
       const result = await generateReport(evaluation as unknown as Record<string, unknown>, testCode, testResult ?? undefined, originalPrompt);
       setReportId(result.report_id);
     } catch {
       alert('Error al generar reporte');
+    } finally {
+      setGenerating(false);
     }
   }, [evaluation, testCode, testResult, originalPrompt]);
 
